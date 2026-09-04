@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>A Little Something For You ♡</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500;600&family=Great+Vibes&family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   CINEMATIC COLOR PALETTE & RESET
+========================================================= */
+:root {
+    --bg-dark: #0d1610;
+    --green-deep: #1b3322;
+    --green-emerald: #2d5a39;
+    --green-accent: #528a60;
+    --gold-glow: #f3d085;
+    --gold-accent: #d4af37;
+    --paper-light: #fefdfa;
+    --text-gold: #f0e2c3;
+    --text-dark: #1c271e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+}
+
+body {
+    color: var(--text-gold);
+    font-family: "DM Sans", sans-serif;
+}
+
+button { font-family: inherit; }
+
+/* Dynamic Canvas Background */
+#bgCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* =========================================================
+   SCREEN TRANSITION SYSTEM
+========================================================= */
+.screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: scale(0.95);
+    transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.screen.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+/* Glassmorphism Container */
+.glass-card {
+    background: rgba(20, 38, 25, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(243, 208, 133, 0.2);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(243, 208, 133, 0.05);
+    border-radius: 24px;
+}
+
+/* =========================================================
+   START SCREEN
+========================================================= */
+.start-card {
+    padding: 40px 30px;
+    width: min(360px, 88vw);
+    text-align: center;
+    position: relative;
+}
+
+.eyebrow {
+    font-family: "Cinzel", serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold-accent);
+    margin-bottom: 15px;
+}
+
+.start-title {
+    font-family: "Great Vibes", cursive;
+    font-size: clamp(55px, 14vw, 80px);
+    background: linear-gradient(135deg, #ffffff, var(--gold-glow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    filter: drop-shadow(0 0 10px rgba(243, 208, 133, 0.3));
+}
+
+.subtitle {
+    margin-top: 15px;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: rgba(240, 226, 195, 0.7);
+}
+
+.epic-btn {
+    margin-top: 35px;
+    padding: 16px 42px;
+    border: 1px solid var(--gold-accent);
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--green-emerald), var(--green-deep));
+    color: var(--gold-glow);
+    font-family: "Cinzel", serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 25px rgba(82, 138, 96, 0.4), inset 0 0 10px rgba(243, 208, 133, 0.2);
+    transition: all 0.3s ease;
+}
+
+.epic-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+    transform: rotate(45deg);
+    transition: 0.5s;
+    opacity: 0;
+}
+
+.epic-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 15px rgba(243, 208, 133, 0.6);
+}
+
+.epic-btn:active::before { opacity: 1; }
+
+/* =========================================================
+   INTRO SCREEN (COUNTDOWN)
+========================================================= */
+.intro-card {
+    padding: 45px 30px;
+    width: min(360px, 88vw);
+    text-align: center;
+}
+
+.for-you {
+    font-family: "Cinzel", serif;
+    font-size: 22px;
+    color: var(--text-gold);
+    letter-spacing: 3px;
+    margin: 10px 0;
+}
+
+.name {
+    font-family: "Great Vibes", cursive;
+    font-size: clamp(50px, 12vw, 75px);
+    color: var(--gold-glow);
+    text-shadow: 0 0 20px rgba(243, 208, 133, 0.5);
+}
+
+.line {
+    width: 120px;
+    height: 1px;
+    margin: 20px auto;
+    background: linear-gradient(90deg, transparent, var(--gold-accent), transparent);
+}
+
+.timer-box {
+    margin-top: 15px;
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 30px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.wait {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: rgba(240, 226, 195, 0.8);
+    text-transform: uppercase;
+}
+
+#count {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--gold-glow);
+    text-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* =========================================================
+   ENVELOPE SCREEN (CINEMATIC 3D LOOK)
+========================================================= */
+.envelope-title {
+    font-family: "Great Vibes", cursive;
+    font-size: clamp(38px, 9vw, 55px);
+    color: var(--gold-glow);
+    margin-bottom: 30px;
+    text-align: center;
+    text-shadow: 0 0 15px rgba(243, 208, 133, 0.3);
+}
+
+.envelope-wrapper {
+    position: relative;
+    width: min(320px, 85vw);
+    aspect-ratio: 1.5 / 1;
+    perspective: 1000px;
+    cursor: pointer;
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.8));
+}
+
+.envelope-box {
+    position: absolute;
+    inset: 0;
+    background: #152b1d;
+    border-radius: 12px;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    overflow: hidden;
+}
+
+/* HIDDEN PAPER INSIDE ENVELOPE */
+.env-paper {
+    position: absolute;
+    left: 5%;
+    bottom: 4%;
+    width: 90%;
+    height: 88%;
+    background: linear-gradient(180deg, #fefdfa, #f3ece0);
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 2;
+    transform: translateY(0%);
+    transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 12px;
+}
+
+.env-paper::after {
+    content: "♡";
+    color: var(--green-emerald);
+    font-size: 18px;
+}
+
+/* POCKET FLAPS */
+.env-pocket {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.env-pocket::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #183322;
+    clip-path: polygon(0 0, 0 100%, 50% 50%);
+}
+
+.env-pocket::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #12261a;
+    clip-path: polygon(100% 0, 100% 100%, 50% 50%);
+}
+
+.env-bottom {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background: #1c3b28;
+    clip-path: polygon(0 100%, 100% 100%, 50% 45%);
+}
+
+/* TOP FLAP */
+.env-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 58%;
+    background: #234731;
+    border-top: 1px solid rgba(212, 175, 55, 0.5);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    z-index: 5;
+    transition: transform 0.7s ease;
+}
+
+/* GOLD WAX SEAL */
+.seal {
+    position: absolute;
+    top: 52%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 55px;
+    height: 55px;
+    background: radial-gradient(circle at 30% 30%, #fef3ad, var(--gold-accent), #8a6d1b);
+    border-radius: 50%;
+    border: 2px solid #fff5c0;
+    display: grid;
+    place-items: center;
+    color: #4a3800;
+    font-size: 22px;
+    z-index: 6;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(243, 208, 133, 0.5);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Envelope Open State Animations */
+.envelope-wrapper.open .env-flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+}
+
+.envelope-wrapper.open .seal {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.6);
+}
+
+.envelope-wrapper.open .env-paper {
+    transform: translateY(-68%);
+}
+
+.tap {
+    margin-top: 30px;
+    font-family: "Cinzel", serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold-glow);
+    text-transform: uppercase;
+    animation: glowPulse 2s infinite alternate;
+}
+
+@keyframes glowPulse {
+    0% { opacity: 0.5; text-shadow: 0 0 5px var(--gold-glow); }
+    100% { opacity: 1; text-shadow: 0 0 15px var(--gold-glow); }
+}
+
+/* =========================================================
+   LETTER SCREEN (COMPACT & LUXURIOUS MOBILE CARD)
+========================================================= */
+.letter-screen {
+    padding: 20px 10px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+}
+
+.letter {
+    position: relative;
+    width: min(450px, 92vw);
+    margin: 30px auto;
+    padding: 40px 25px;
+    background: linear-gradient(180deg, rgba(254, 253, 250, 0.96), rgba(245, 238, 224, 0.96));
+    border-radius: 16px;
+    border: 1px solid var(--gold-glow);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(243, 208, 133, 0.2);
+    color: var(--text-dark);
+}
+
+.letter-head {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    padding-bottom: 15px;
+}
+
+.letter-head small {
+    font-family: "Cinzel", serif;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: #7a6328;
+    text-transform: uppercase;
+}
+
+.letter-head h1 {
+    font-family: "Great Vibes", cursive;
+    font-size: clamp(36px, 8vw, 48px);
+    color: var(--green-deep);
+    font-weight: normal;
+    margin-top: 5px;
+}
+
+.message {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 18px;
+    line-height: 1.7;
+    color: #222d24;
+}
+
+.message p { margin-bottom: 18px; }
+
+.signature {
+    margin-top: 35px;
+    text-align: right;
+    font-family: "Great Vibes", cursive;
+    font-size: 38px;
+    color: var(--green-emerald);
+}
+
+/* =========================================================
+   MUSIC BUTTON
+========================================================= */
+.music {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 100;
+    width: 48px;
+    height: 48px;
+    display: none;
+    place-items: center;
+    border: 1px solid var(--gold-glow);
+    border-radius: 50%;
+    background: rgba(13, 22, 16, 0.8);
+    backdrop-filter: blur(8px);
+    color: var(--gold-glow);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<section class="screen active" id="startScreen">
+    <div class="glass-card start-card">
+        <div class="eyebrow">a special note</div>
+        <div class="start-title">Just For You</div>
+        <div class="subtitle">made with love ♡</div>
+        <button class="epic-btn" id="startBtn">OPEN EXPEREIENCE</button>
+    </div>
+</section>
+
+<section class="screen" id="introScreen">
+    <div class="glass-card intro-card">
+        <div class="eyebrow">crafted for</div>
+        <div class="for-you">MY FAVORITE PERSON</div>
+        <div class="name" id="herName">ela</div>
+        <div class="line"></div>
+        <div class="timer-box">
+            <div class="wait">opening in <span id="count">10</span>s</div>
+        </div>
+    </div>
+</section>
+
+<section class="screen" id="envelopeScreen">
+    <div class="envelope-title">i have a letter for you...</div>
+    
+    <div class="envelope-wrapper" id="envelope">
+        <div class="envelope-box"></div>
+        <div class="env-paper"></div>
+        <div class="env-pocket"></div>
+        <div class="env-bottom"></div>
+        <div class="env-flap"></div>
+        <div class="seal">♡</div>
+    </div>
+
+    <div class="tap" id="tapText">Tap the envelope to open</div>
+</section>
+
+<section class="screen letter-screen" id="letterScreen">
+    <article class="letter">
+        <div class="letter-head">
+            <small>a letter from my heart</small>
+            <h1>to my favorite person,</h1>
+        </div>
+
+        <div class="message">
+            <p>hi elaa,</p>
+            <p>i don't really know where to start because there are so many things i want to tell you, and somehow no amount of words feels enough to explain how much you mean to me. i didnt 
+			expect that having you in my life again would be my biggest plot twist this year. of course this time i never want to lose you. you came into my life when i least expected it and 
+			somehow, you made everything feel lighter. as for you i'll do everything i can. i'll love you sincerely, without any doubts, and i'll give you love and treatment you deserve. i really want/love you 
+			more than words can express, and god know how much you mean to me, im willing to give everything that i can kahit maubusan pako or wtvr. i know na masyado pang maaga, i know wala pa
+			tayo dun sa stage na ano basta ayun, but even now, you've already become such an important person in my life. every time we talk, every little laugh we share, and every moment na we spend getting to know each
+			other deeper pa makes me appreciate you even more while writing this di talaga ako makapaniwala na may isang babae na mamahalin ako ng todo at yun yung babae na sobrang importante
+			sakin cuz you are my greatest love. gusto ko lng sabihin na this time, my intentions will be pure, and all i wanted to do is love you and make you feel that you always had me
+			when nobody was there for you. kayang kaya kitang pangitiin, at ipapangako ko sayo na sasamahan kita sa lahat ng mga gusto mo. as long as i have you, ill always do my best to love you 
+			sincerely and wholeheartedly. ill give you the care, patience, respect, and reassurance you deserve, without making you ask for it. alam ko na hindi naman palagi tama yung ginagawa ko 
+			but ill keep learning, improving, and showing you through my actions how much you mean to me. i know your past has hurt you, and i hope it doesnt stop you from seeing the love im trying
+			to give you. i may not always have the perfect words, but ill keep showing you how much i love you in every way i can. hindi ko makakalimutan lahat ng nangyari sa atin pati na kung pano kita unang
+			nakilala nung g7, and look ngayon alam kong hindi man tayo consistent like simula nung g7 hanggang ngayon na tayo na ulit. pero isa lng talaga ibig sabihin nun kahit andami nang nangyari between us 
+            kahit na sa isat-isa parin tayo babagsak kasi we truly like/love each other lalo na ako for me kahit may mga nangyari nun ikaw at ikaw parin ang uuwian ko. </p>
+			
+            <p>ginawa ko tong website hindi lng para may maibigay ako sayo or wtvr, pero kasi gusto lng magkaroon ng smth na pwede kong gamitin para sabihin sayo yung mga bagay na gustong gusto kong sabihin lagi.
+			thank you for choosing ti be here with me again. alam kong hindi naging madali yung nangyari sayo before, and i know na may mga bagay from your past relationship na nag-iwan talaga ng talaga sayo ng trauma. kaya this time,
+			ayokong dagdagan pa yon, kasi gusto kong maging taong makakapagbigay or makakapagparamdam sayo ng peace and reassurance, hindi yung kailangan mo pang pagdudahan sakin kung safe kaba or kung iiwan ba kita ulit or wtvr.
+			i know na hindi ko pwedeng basta basta nalng sabihin yung "ill treat you better" and expect you to believe me agad. kaya nga im here to prove you na gusto kong ipakita sayo talaga through my actions, kahit sa mga simpleng bagay.
+			ill try to understand you more, listen to you, respect your boundaries, and be more careful with the things that might hurt you. yes ik hindi naman ako perfect and i know may mga pagkakamali ako na nagagawa, pero this time, i want to learn 
+			from them instead of repeating them. super thank you for giving us another chance kahit alam nating pareho kung gaano karami yung pinagdaanan natin. i dont want this to feel like were just going back to what we had before.
+			kaya gusto ko this time na gawin nating something better this time, something that feels safer, healthier, and more genuine for both of us. and if theres one thing i really want you to know, its that you dont have to be afraid to be yourself around me.
+			you dont have to constantly worry about doing something wrong or being too much. i want you to feel loved without having to earn it every single time. this website is just one small way of me showing you how thankful i am that you're here again. the rest i want to prove
+			you little by little, through the way i love you and the way i choose you everyday. 
+			
+			
+			
+			</p>
+			
+            <p>i hope you know how lucky and thankful i am that i have met you again for the third time. i never thought na aabot at mangyayari ulit tong bagay nato, it was so unexpected talaga. you make me feel loved, important, valued,
+			and seen. i know were still young and maybe we dont have everything figured out yet, but one thing im sure is how i feel about you. hindi ko alam kung ano mangyayari in the future, basta alam ko sa sarili ko na ikawyung taong
+			gusto kong piliin araw-araw. im not here again for temporary feeling, and im not here just for the good days. im here because out of everyone i couldve chosen, ikaw yung taong palagi kong gustong balikan kahit ano pa man mangyari.
+			i learned from my mistakes and hinding hindi na po mauulit yun. kasi ngayon im here to prove you na ibang iba nako and will give you the treatment that you deserve. gusto ko lng din sabihin sayo na im not interested in anyone else. kasi ikaw
+			lng talaga yung taong gustong gusto kong makasama dati pa, and ayun natupad na yung hiling ko kasi dumating kana ulit. let me prove to you that. i am different from your past, i will love you more than what you deserve. 
+			
+			
+			</p>
+            <p>to me, they're not ordinary.</p>
+            <p>i love you not because you're perfect, but because you're you. i love the person you are, the person you're becoming, and even the parts of yourself that you're still learning to understand.
+			i know na hindi mo laging inaamin, but you're honestly one of the strongest people that i know. ang dami mo nang pagsubok na pinagdaanan, and even minsan mo lng sabihin yun or wtvr, i can see it kasi alam ko 
+			kung may mga bagay ka na pinagdadaanan. thats why im so proud of you, im so proud of how you keep getting back up, even on the days when life feels so unfair because of treatments. 
+			ill always believe in you. kahit may mga araw na feeling mo hindi mo na kayang maniwala sa sarili mo lalo na dati. i hope you remember that theres always someone whos rootig for you. and i hope
+			you know that im one of those people. one of the things im most thankful is your presence. kahit may sarili kang pinagdadaanan, you still find way for the people you love. i dont think you realize how much that means,
+			but i notice it. i always do naman po eh and thats one of the many reasons why i appreciate you so much. for being a strong ate:)
+			
+			</p>
+            <p>thank you for every moment, every conversation, every laugh, and every memory. i'm grateful for the start of every piece of our story.</p>
+            <p>you can simply be yourself.</p>
+            <p>and i'll still choose you.</p>
+            <p>so if you ever forget how important you are to me, come back here and read this again.</p>
+            <p>i love you ♡</p>
+        </div>
+
+        <div class="signature">always yours ♡</div>
+    </article>
+</section>
+
+<audio id="music" loop preload="auto">
+    <source src="love is.mp3" type="audio/mpeg">
+</audio>
+
+<button class="music" id="musicBtn">♫</button>
+
+<script>
+const HER_NAME = "ela";
+const music = document.getElementById("music");
+const musicBtn = document.getElementById("musicBtn");
+document.getElementById("herName").textContent = HER_NAME;
+
+/* =========================================================
+   CANVAS DYNAMIC FIREFLIES & LIGHTING TRAIL
+========================================================= */
+const canvas = document.getElementById("bgCanvas");
+const ctx = canvas.getContext("2d");
+
+let width, height;
+let particles = [];
+let touchTrail = [];
+
+function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+class Firefly {
+    constructor() {
+        this.reset();
+    }
+    reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2.5 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.4;
+        this.speedY = (Math.random() - 0.5) * 0.4;
+        this.alpha = Math.random();
+        this.pulse = Math.random() * 0.02 + 0.005;
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.alpha += this.pulse;
+
+        if (this.alpha >= 1 || this.alpha <= 0.1) this.pulse = -this.pulse;
+        if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) this.reset();
+    }
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(243, 208, 133, ${Math.max(0, this.alpha)})`;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = "#f3d085";
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+}
+
+for (let i = 0; i < 50; i++) particles.push(new Firefly());
+
+// Interactive Touch/Mouse Glow Trail
+function addTrail(x, y) {
+    touchTrail.push({ x, y, alpha: 1, size: Math.random() * 4 + 2 });
+}
+
+window.addEventListener("mousemove", (e) => addTrail(e.clientX, e.clientY));
+window.addEventListener("touchmove", (e) => {
+    if(e.touches.length > 0) addTrail(e.touches[0].clientX, e.touches[0].clientY);
+});
+
+function animateCanvas() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Background Ambient Gradient
+    let grad = ctx.createRadialGradient(width/2, height/2, 50, width/2, height/2, Math.max(width, height));
+    grad.addColorStop(0, "#142619");
+    grad.addColorStop(1, "#0a110c");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+
+    // Fireflies Render
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+
+    // Touch Light Trails Render
+    for (let i = 0; i < touchTrail.length; i++) {
+        let t = touchTrail[i];
+        t.alpha -= 0.02;
+        t.size += 0.2;
+        if (t.alpha <= 0) {
+            touchTrail.splice(i, 1);
+            i--;
+            continue;
+        }
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(243, 208, 133, ${t.alpha * 0.6})`;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "#f3d085";
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+
+    requestAnimationFrame(animateCanvas);
+}
+animateCanvas();
+
+/* =========================================================
+   APP LOGIC & SCREEN TRANSITIONS
+========================================================= */
+const startScreen = document.getElementById("startScreen");
+const introScreen = document.getElementById("introScreen");
+const envelopeScreen = document.getElementById("envelopeScreen");
+const letterScreen = document.getElementById("letterScreen");
+
+function showScreen(screen) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    requestAnimationFrame(() => {
+        screen.classList.add("active");
+    });
+}
+
+// 1. Start Button Click
+document.getElementById("startBtn").addEventListener("click", () => {
+    music.play().then(() => {
+        musicBtn.style.display = "grid";
+    }).catch(() => {
+        musicBtn.style.display = "grid";
+    });
+
+    showScreen(introScreen);
+
+    let timeLeft = 10;
+    const count = document.getElementById("count");
+    count.textContent = timeLeft;
+
+    const timer = setInterval(() => {
+        timeLeft--;
+        count.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            showScreen(envelopeScreen);
+        }
+    }, 1000);
+});
+
+// 2. Open Envelope Animation
+let isOpening = false;
+document.getElementById("envelope").addEventListener("click", () => {
+    if (isOpening) return;
+    isOpening = true;
+
+    const env = document.getElementById("envelope");
+    env.classList.add("open");
+    document.getElementById("tapText").style.opacity = "0";
+
+    setTimeout(() => {
+        showScreen(letterScreen);
+    }, 1500);
+});
+
+// 3. Audio Toggle
+musicBtn.addEventListener("click", () => {
+    if (music.paused) {
+        music.play();
+        musicBtn.style.opacity = "1";
+    } else {
+        music.pause();
+        musicBtn.style.opacity = "0.5";
+    }
+});
+</script>
+</body>
+</html>
